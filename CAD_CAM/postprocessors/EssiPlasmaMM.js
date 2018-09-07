@@ -11,6 +11,8 @@
 								Korrektur an den Vollkreisen
 								Als Anfahrwegtyp können auch Radien, die nicht vom Zentrum beginnen, verwendet werden (outputOffsetPath)
 	003		2018-08-18	wd		pointMoveZ für Punktsignieren verwendet: AF 110/111 (Dient als Körner Ersatz zum Bohren)
+	004		2018-09-05	wd		Vor "lead out" wird die Höhenautomatik abgeschaltet
+	005		2018-09-07	am		korrektur "lead out" 
  */
 
 // Include definition of class GCodeBase:
@@ -36,7 +38,7 @@ function EssiPlasmaMM(cadDocumentInterface, camDocumentInterface) {
     this.registerVariable("direction",      	 "direction",            true, "", "DEFAULT", "DEFAULT");
     this.registerVariable("postprozessor",       "POSTPROZESSOR",  	     true, "", "DEFAULT", "DEFAULT");
 	
-	this.postprozessor =  "EssiPlasmaMM V003";
+	this.postprozessor =  "EssiPlasmaMM V005";
 	
 	this.rapidMove = [
 	    "5",
@@ -79,9 +81,13 @@ function EssiPlasmaMM(cadDocumentInterface, camDocumentInterface) {
 	this.arcCCWMove = ["[X!][Y!][IA!][JA!]+"];
 
 	
+	// ------
+	//Bei "this.outputOffsetPath = true" werden die Codes nicht verwendet
 	this.linearMoveCompensationLeft = ["[X!][Y!]"];
 	this.linearMoveCompensationRight = ["[X!][Y!]"];
-	this.linearMoveCompensationOff = ["[X!][Y!]"];
+	this.linearMoveCompensationOff = ["48","[X!][Y!]"];
+	// ------
+	
 	
     this.fileExtensions = ["mpg"];
     this.unit = RS.Millimeter;
@@ -101,6 +107,12 @@ EssiPlasmaMM.prototype.formatValue = function(value, decimals, options) {
 };
 EssiPlasmaMM.prototype.writeEntity = function() {
 
+	var leadOut = this.getEntityOptionBool(this.currentEntity, "CamLeadOut", false) ||
+                  this.getEntityOptionBool(this.currentEntity, "CamOvercutOut", false);
+
+    if (leadOut) {
+        this.writeLine("48");
+    }
 
 	// direction
 	if(this.getDirection() == 1){
