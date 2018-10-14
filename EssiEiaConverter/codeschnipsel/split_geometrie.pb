@@ -2,7 +2,11 @@
 Global Dim segment.s(0)
 Procedure split(in$)
   ; Trennt eine Geometrie in Segmente
-  If (Mid(in$,1,1) =  "+" Or  Mid(in$,1,1) =  "-")
+  If in$ =""
+    ; Eingabe ist leer
+    segment(0) = "0"
+    ProcedureReturn  0
+  ElseIf (Mid(in$,1,1) =  "+" Or  Mid(in$,1,1) =  "-")
     NewList vorzeichen()
     laenge = Len(in$)
     For i=0 To laenge-1
@@ -31,7 +35,7 @@ Procedure split(in$)
     segment(0) = Str(ListSize(vorzeichen()))
     ProcedureReturn  ListSize(vorzeichen())
   Else
-    ; darf nicht mit einer Hilfsfunktion beginnen oder Eingabe ist leer.
+    ; darf nicht mit einer Hilfsfunktion beginnen.
     segment(0) = "-1"
     ProcedureReturn  -1
   EndIf
@@ -67,8 +71,7 @@ split("-+-+-")
 show()
 
 ; IDE Options = PureBasic 5.42 LTS (Windows - x86)
-; CursorPosition = 48
-; FirstLine = 1
+; CursorPosition = 47
 ; Folding = -
 ; EnableUnicode
 ; EnableXP
