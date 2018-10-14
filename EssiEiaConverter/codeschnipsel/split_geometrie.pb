@@ -1,13 +1,15 @@
-﻿Procedure split(in$)
+﻿
+Global Dim segment.s(0)
+Procedure split(in$)
   ; Trennt eine Geometrie in Segmente
-  ; darf nicht mit einer Hilfsfunktion beginnen.
-  NewList vorzeichen()
-  laenge = Len(in$)
-  For i=0 To laenge-1
-    seg$ = Mid(in$,i+1,1)
-    If (seg$ = "+" Or seg$ = "-")
-      AddElement(vorzeichen())
-       vorzeichen() = i
+  If (Mid(in$,1,1) =  "+" Or  Mid(in$,1,1) =  "-")
+    NewList vorzeichen()
+    laenge = Len(in$)
+    For i=0 To laenge-1
+      seg$ = Mid(in$,i+1,1)
+      If (seg$ = "+" Or seg$ = "-")
+        AddElement(vorzeichen())
+        vorzeichen() = i
       EndIf
     Next
     
@@ -23,21 +25,50 @@
       EndIf
       t1 = start
       t2 =  ende - (start-1)
-      Debug Str(start) + "--" + Str(ende)+ "   --> " + Mid(in$,t1,t2)
-      Next
+      ReDim segment(i+1) 
+      segment(i+1) = Mid(in$,t1,t2)
+    Next
+    segment(0) = Str(ListSize(vorzeichen()))
+    ProcedureReturn  ListSize(vorzeichen())
+  Else
+    ; darf nicht mit einer Hilfsfunktion beginnen oder Eingabe ist leer.
+    segment(0) = "-1"
+    ProcedureReturn  -1
+  EndIf
+EndProcedure
+
+
+Procedure show()
+  Debug "-------------------"
+  temp = Val(segment(0))
+  Debug temp
+  If temp > 0
+    For i=0 To temp-1
+      Debug segment(i+1) 
+    Next
+  ElseIf temp = -1
+      Debug "FEHLER"
+  EndIf
 EndProcedure
 
 
 
-
+split("+")
+show()
+split("")
+show()
+split("5+5")
+show()
 split("+10-102+10-10+4")
-Debug "----"
+show()
 split("+-+-+")
-Debug "----"
+show()
 split("-+-+-")
+show()
 
 ; IDE Options = PureBasic 5.42 LTS (Windows - x86)
-; CursorPosition = 36
+; CursorPosition = 48
+; FirstLine = 1
 ; Folding = -
 ; EnableUnicode
 ; EnableXP
